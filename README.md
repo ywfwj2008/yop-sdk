@@ -13,23 +13,7 @@ PHP 5.5 and later
 ## Installation & Usage
 ### Composer
 
-To install the bindings via [Composer](http://getcomposer.org/), add the following to `composer.json`:
-
-```
-{
-"repositories": [
-{
-"type": "git",
-"url": "https://github.com/yeepay/yop-sdk.git"
-}
-],
-"require": {
-"yeepay/yop-sdk": "*@dev"
-}
-}
-```
-
-Then run `composer install`
+To install the bindings via [Composer](http://getcomposer.org/), `composer require ywfwj2008/yop-sdk`
 
 ### Manual Installation
 
@@ -53,7 +37,6 @@ composer install
 Please follow the [installation procedure](#installation--usage) and then run the following:
 
 ```php
-        <?php
 require_once(__DIR__ . '/vendor/autoload.php');
 
     // Configure API key authorization: YOP-RSA2048-SHA256
@@ -98,8 +81,6 @@ $result = $apiInstance->accountTransferTransfer($amount, $creditCustomerNo, $req
 } catch (Exception $e) {
 echo 'Exception when calling CloudAccount->accountTransferTransfer: ', $e->getMessage(), PHP_EOL;
 }
-
-?>
 ```
 
 ## Documentation for API Endpoints
