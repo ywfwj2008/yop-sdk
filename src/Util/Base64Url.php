@@ -1,4 +1,5 @@
 <?php
+namespace DishCheng\YopPay\Util;
 
 /*
  * The MIT License (MIT)

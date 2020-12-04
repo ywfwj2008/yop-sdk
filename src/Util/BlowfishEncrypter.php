@@ -24,6 +24,10 @@ abstract class BlowfishEncrypter{
      * @return type
      */
     static public function encode( $str, $key){
+        echo $str;
+        echo "123456789";
+        echo "<br>";
+        echo $key;
         $md5Key = md5($key);
         return base64_encode(mcrypt_encrypt(self::CIPHER, substr($md5Key,0,16), $str, self::MODE, substr($md5Key,0,8)));
     }

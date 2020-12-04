@@ -3,7 +3,8 @@
 require_once("Base64Url.php");
 require_once("AESEncrypter.php");
 
-abstract class YopSignUtils{
+abstract class YopSignUtils
+{
 
     /**
      * 签名生成算法
@@ -12,22 +13,23 @@ abstract class YopSignUtils{
      * @param String $secret 密钥
      * @param String $algName 加密算法
      *
-    md2
-    md4
-    md5
-    sha1
-    sha256
-    sha384
-    sha512
-    ripemd128
-    ripemd160
-    ripemd256
-    ripemd320
-    whirlpool
+     * md2
+     * md4
+     * md5
+     * sha1
+     * sha256
+     * sha384
+     * sha512
+     * ripemd128
+     * ripemd160
+     * ripemd256
+     * ripemd320
+     * whirlpool
      *
      * @return string 返回参数签名值
      */
-    static function sign($params, $ignoreParamNames='', $secret, $algName='sha256'){
+    static function sign($params, $ignoreParamNames = '', $secret, $algName = 'sha256', $debug = false)
+    {
         $str = '';  //待签名字符串
         //先将参数以其参数名的字典序升序进行排序
         $requestparams = $params;
@@ -36,7 +38,7 @@ abstract class YopSignUtils{
         //遍历排序后的参数数组中的每一个key/value对
         foreach ($requestparams as $k => $v) {
             //查看Key 是否为忽略参数
-            if(!in_array($k,$ignoreParamNames)){
+            if (!in_array($k, $ignoreParamNames)) {
                 //为key/value对生成一个keyvalue格式的字符串，并拼接到待签名字符串后面
 
                 //value不为空,则进行加密
@@ -47,15 +49,16 @@ abstract class YopSignUtils{
         }
 
         //将签名密钥拼接到签名字符串两头
-        $str = $secret.$str.$secret;
+        $str = $secret . $str . $secret;
         //通过指定算法生成sing
 
-        $signValue = hash($algName,$str);
+        $signValue = hash($algName, $str);
 
-        if (YopConfig::$debug) {
-            var_dump("algName=".$algName);
-            var_dump("str=".$str);
-            var_dump("signValue=".$signValue);
+        if ($debug) {
+            print_r($YopConfig);
+            var_dump("algName=" . $algName);
+            var_dump("str=" . $str);
+            var_dump("signValue=" . $signValue);
         }
 
         return $signValue;
@@ -70,72 +73,84 @@ abstract class YopSignUtils{
      * @param String $sign 签名值
      * @return string 返回签名是否正确 0 - 如果两个字符串相等
      */
-   static function isValidResult($result, $secret, $algName,$sign){
-       $newString = $secret.$result.$secret;
+    static function isValidResult($result, $secret, $algName, $sign)
+    {
+//       var_dump($result);
+//        $string=json_encode($result,true);
+//        $string=json_decode($string,true);
+//        var_dump($string);
+        $Str = "";
+        foreach ($result as $k => $v) {
+            $Str .= strlen($Str) == 0 ? "" : "&";
+            $Str .= $k . "=" . $v;
+        }
+        $newString = $secret . $Str . $secret;
+//       echo $newString;
+        if (strcasecmp($sign, hash($algName, $newString)) == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-       if(strcasecmp($sign,hash($algName,$newString))==0){
-           return true;
-       }else{
-           return false;
-       }
+    static function decrypt($source, $private_Key, $public_Key)
+    {
 
-   }
-
-   public static function decrypt($source, $private_Key, $public_Key)
-   {
-       $private_key = "-----BEGIN RSA PRIVATE KEY-----\n" .
-           wordwrap($private_Key, 64, "\n", true) .
-           "\n-----END RSA PRIVATE KEY-----";
+        $private_key = "-----BEGIN RSA PRIVATE KEY-----\n" .
+            wordwrap($private_Key, 64, "\n", true) .
+            "\n-----END RSA PRIVATE KEY-----";
 
        extension_loaded('openssl') or die('php需要openssl扩展支持');
 
-       /* 提取私钥 */
-       $privateKey = openssl_get_privatekey($private_key);
+
+
+        /* 提取私钥 */
+        $privateKey = openssl_get_privatekey($private_key);
 
        ($privateKey) or die('密钥不可用');
 
-       //分解参数
-       $args = explode('$', $source);
 
-       if (count($args) != 4) {
-           die('source invalid : ');
-       }
+        //分解参数
+        $args = explode('$', $source);
 
-       $encryptedRandomKeyToBase64 = $args[0];
-       $encryptedDataToBase64 = $args[1];
-       $symmetricEncryptAlg = $args[2];
-       $digestAlg = $args[3];
 
-       //用私钥对随机密钥进行解密
-       openssl_private_decrypt(Base64Url::decode($encryptedRandomKeyToBase64), $randomKey, $privateKey);
+        if (count($args) != 4) {
+            die('source invalid : ');
+        }
 
-       openssl_free_key($privateKey);
+        $encryptedRandomKeyToBase64 = $args[0];
+        $encryptedDataToBase64 = $args[1];
+        $symmetricEncryptAlg = $args[2];
+        $digestAlg = $args[3];
 
-       $encryptedData = openssl_decrypt(Base64Url::decode($encryptedDataToBase64), "AES-128-ECB", $randomKey, OPENSSL_RAW_DATA);
+        //用私钥对随机密钥进行解密
+        openssl_private_decrypt(Base64Url::decode($encryptedRandomKeyToBase64), $randomKey, $privateKey);
+        openssl_free_key($privateKey);
+        $encryptedData = openssl_decrypt(Base64Url::decode($encryptedDataToBase64), "AES-128-ECB", $randomKey, OPENSSL_RAW_DATA);
+        //分解参数
+        $signToBase64 = substr(strrchr($encryptedData, '$'), 1);
+        $sourceData = substr($encryptedData, 0, strlen($encryptedData) - strlen($signToBase64) - 1);
 
-       //分解参数
-       $signToBase64=substr(strrchr($encryptedData,'$'),1);
-       $sourceData = substr($encryptedData,0,strlen($encryptedData)-strlen($signToBase64)-1);
+        $public_key = "-----BEGIN PUBLIC KEY-----\n" .
+            wordwrap($public_Key, 64, "\n", true) .
+            "\n-----END PUBLIC KEY-----";
 
-       $public_key = "-----BEGIN PUBLIC KEY-----\n" .
-           wordwrap($public_Key, 64, "\n", true) .
-           "\n-----END PUBLIC KEY-----";
 
-       $publicKey = openssl_pkey_get_public($public_key);
+        $publicKey = openssl_pkey_get_public($public_key);
 
-       $res = openssl_verify($sourceData,Base64Url::decode($signToBase64), $publicKey, $digestAlg); //验证
+        $res = openssl_verify($sourceData, Base64Url::decode($signToBase64), $publicKey, $digestAlg); //验证
 
-       openssl_free_key($publicKey);
+        openssl_free_key($publicKey);
 
        //输出验证结果，1：验证成功，0：验证失败
        if ($res == 1) {
            return $sourceData;
        } else {
-           Die("verifySign fail!");
+           echo "verifySign fail!";
        }
    }
 
-    static function signRsa($source,$private_Key)
+    static function signRsa($source, $private_Key)
     {
         $private_key = "-----BEGIN RSA PRIVATE KEY-----\n" .
             wordwrap($private_Key, 64, "\n", true) .
@@ -163,15 +178,14 @@ abstract class YopSignUtils{
 
     }
 
-    static function getPrivateKey($filepath,$password)
+    static function getPrivateKey($filepath, $password)
     {
-        //var_dump($filepath);
         $pkcs12 = file_get_contents($filepath);
         openssl_pkcs12_read($pkcs12, $certs, $password);
         $prikeyid = $certs['pkey']; //私钥
 
-        $prikeyid = str_replace('-----BEGIN RSA PRIVATE KEY-----','',$prikeyid);
-        $prikeyid = str_replace('-----END RSA PRIVATE KEY-----','',$prikeyid);
+        $prikeyid = str_replace('-----BEGIN PRIVATE KEY-----','',$prikeyid);
+        $prikeyid = str_replace('----END PRIVATE KEY-----','',$prikeyid);
 
         $prikeyid = preg_replace("/(\r\n|\n|\r|\t)/i", '', $prikeyid);
 

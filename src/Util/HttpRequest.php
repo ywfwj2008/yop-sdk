@@ -1,12 +1,12 @@
 <?php
 
 require_once("HttpUtils.php");
-
+error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 define("LANGS", "php");
-define("VERSION", "3.1.9");
+define("VERSION", "3.2.13");
 define("USERAGENT", LANGS . "/" . VERSION . "/" . PHP_OS . "/" . $_SERVER ['SERVER_SOFTWARE'] . "/Zend Framework/" . zend_version() . "/" . PHP_VERSION . "/" . $_SERVER['HTTP_ACCEPT_LANGUAGE'] . "/");
 
-abstract class HTTPRequest
+abstract class HttpRequest
 {
 
     /**
@@ -24,13 +24,14 @@ abstract class HTTPRequest
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($curl, CURLOPT_AUTOREFERER, 1);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
+        curl_setopt($curl, CURLOPT_HEADER, 1);
+        //curl_setopt($curl, CURLOPT_NOBODY, 0);
         curl_setopt($curl, CURLOPT_TIMEOUT, $request->readTimeout);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $request->connectTimeout);
 
         $TLS = substr($url, 0, 8) == "https://" ? true : false;
         if ($TLS) {
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
         }
 
@@ -45,13 +46,14 @@ abstract class HTTPRequest
         array_push($headerArray, "x-yop-sdk-langs:" . LANGS);
         array_push($headerArray, "x-yop-sdk-version:" . VERSION);
         array_push($headerArray, "x-yop-request-id:" . $request->requestId);
-        if (isset($request->jsonParam)) {
+        if ($request->jsonParam != null) {
             array_push($headerArray, 'Content-Type: application/json; charset=utf-8',
                 'Content-Length: ' . strlen($request->jsonParam));
         }
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headerArray);
 
         //var_dump($headerArray);
+        curl_setopt($curl, CURLOPT_HTTPHEADER,  $headerArray);
+        //curl_setopt($curl, CURLINFO_HEADER_OUT, );
         //var_dump($request);
         //var_dump($request->httpMethod);
 
@@ -82,30 +84,46 @@ abstract class HTTPRequest
 
                         $fields [$fileParam] = $file;
                     }
-                    curl_setopt($curl, CURLOPT_INFILESIZE, YopConfig::$maxUploadLimit);
-                    //curl_setopt($curl, CURLOPT_BUFFERSIZE, 16kB);
+                    curl_setopt($curl, CURLOPT_INFILESIZE, $request->config->maxUploadLimit);
+                    curl_setopt($curl, CURLOPT_BUFFERSIZE, 128);
                 }
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $fields);
             }
         } else {
-            //var_dump(http_build_query($request->paramMap));
             curl_setopt($curl, CURLOPT_URL, $url);
         }
-
         $data = curl_exec($curl);
-        //var_dump($data);
-
+        //print_r($data);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         if (curl_errno($curl)) {
             return curl_error($curl);
         }
+        $info['code'] = $httpCode;
+        if (true) {
+            list($header, $body) = explode("\r\n\r\n", $data, 2);
+            $headers = explode("\r\n", $header);
+            $headList = array();
+            foreach ($headers as $head) {
+                $value = explode(':', $head);
+                $headList[$value[0]] = $value[1];
+            }
 
-        $responseHeaders = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
-        //print_r($responseHeaders);
-        //print_r(substr_compare($responseHeaders, "application/octet-stream", 0, 16));
-        if (!empty($responseHeaders) && substr_compare($responseHeaders, "application/octet-stream", 0, 16) == 0) {
-            $request->downRequest = true;
+            $bodys = explode("\r\n", $body);
+            foreach ($bodys as $body) {
+                $value = explode(':', $body);
+                $headList[$value[0]] = $value[1];
+            }
+
+            $info['header'] = $headList;
+            //print_r($headList);
+            //echo '----------<br>';
+            $info['content'] = $body;
+            $info['filecontent'] = $bodys;
+            //print_r($bodys);
+            return $info;
+        } else {
+            $info['content'] = $data;
         }
-
         curl_close($curl);
         return $data;
     }

@@ -32,7 +32,7 @@ abstract class HttpUtils
      */
     public static function normalizePath($path)
     {
-        return str_replace("%2F", "/",HttpUtils::normalize($path));
+        return str_replace("%2F", "/", HttpUtils::normalize($path));
     }
 
     /**
@@ -44,12 +44,14 @@ abstract class HttpUtils
         return rawurlencode($value);
     }
 
-    public static function startsWith($haystack, $needle) {
+    public static function startsWith($haystack, $needle)
+    {
         // search backwards starting from haystack length characters from the end
         return $needle === "" || strrpos($haystack, $needle, -strlen($haystack)) !== FALSE;
     }
 
-    public static function endsWith($haystack, $needle) {
+    public static function endsWith($haystack, $needle)
+    {
         // search forward starting from end minus needle length characters
         return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== FALSE);
     }
@@ -62,7 +64,7 @@ abstract class HttpUtils
     {
         if ($path == null) {
             return "/";
-        } else if (HttpUtils::startsWith($path,'/')) {
+        } else if (HttpUtils::startsWith($path, '/')) {
             return HttpUtils::normalizePath($path);
         } else {
             return "/" + HttpUtils::normalizePath($path);
