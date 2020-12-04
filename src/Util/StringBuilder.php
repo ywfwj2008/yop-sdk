@@ -1,4 +1,5 @@
 <?php
+namespace YunYao\YopSdk\Util;
 
 /**
  * Created by PhpStorm.

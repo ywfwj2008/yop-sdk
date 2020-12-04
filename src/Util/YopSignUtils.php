@@ -1,7 +1,8 @@
 <?php
+namespace YunYao\YopSdk\Util;
 
-require_once("Base64Url.php");
-require_once("AESEncrypter.php");
+//require_once("Base64Url.php");
+//require_once("AESEncrypter.php");
 
 abstract class YopSignUtils
 {
@@ -100,14 +101,13 @@ abstract class YopSignUtils
             wordwrap($private_Key, 64, "\n", true) .
             "\n-----END RSA PRIVATE KEY-----";
 
-       extension_loaded('openssl') or die('php需要openssl扩展支持');
-
+        extension_loaded('openssl') or die('php需要openssl扩展支持');
 
 
         /* 提取私钥 */
         $privateKey = openssl_get_privatekey($private_key);
 
-       ($privateKey) or die('密钥不可用');
+        ($privateKey) or die('密钥不可用');
 
 
         //分解参数
@@ -142,13 +142,13 @@ abstract class YopSignUtils
 
         openssl_free_key($publicKey);
 
-       //输出验证结果，1：验证成功，0：验证失败
-       if ($res == 1) {
-           return $sourceData;
-       } else {
-           echo "verifySign fail!";
-       }
-   }
+        //输出验证结果，1：验证成功，0：验证失败
+        if ($res == 1) {
+            return $sourceData;
+        } else {
+            echo "verifySign fail!";
+        }
+    }
 
     static function signRsa($source, $private_Key)
     {
@@ -184,8 +184,8 @@ abstract class YopSignUtils
         openssl_pkcs12_read($pkcs12, $certs, $password);
         $prikeyid = $certs['pkey']; //私钥
 
-        $prikeyid = str_replace('-----BEGIN PRIVATE KEY-----','',$prikeyid);
-        $prikeyid = str_replace('----END PRIVATE KEY-----','',$prikeyid);
+        $prikeyid = str_replace('-----BEGIN PRIVATE KEY-----', '', $prikeyid);
+        $prikeyid = str_replace('----END PRIVATE KEY-----', '', $prikeyid);
 
         $prikeyid = preg_replace("/(\r\n|\n|\r|\t)/i", '', $prikeyid);
 

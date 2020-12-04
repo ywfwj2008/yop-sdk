@@ -1,6 +1,7 @@
 <?php
+namespace YunYao\YopSdk\Util;
 
-require_once("HttpUtils.php");
+//require_once("HttpUtils.php");
 error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 define("LANGS", "php");
 define("VERSION", "3.2.13");
@@ -50,13 +51,11 @@ abstract class HttpRequest
             array_push($headerArray, 'Content-Type: application/json; charset=utf-8',
                 'Content-Length: ' . strlen($request->jsonParam));
         }
-
         //var_dump($headerArray);
-        curl_setopt($curl, CURLOPT_HTTPHEADER,  $headerArray);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headerArray);
         //curl_setopt($curl, CURLINFO_HEADER_OUT, );
         //var_dump($request);
         //var_dump($request->httpMethod);
-
         if ("POST" == $request->httpMethod) {
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_POST, 1);

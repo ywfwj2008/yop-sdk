@@ -1,6 +1,8 @@
 <?php
-require_once("YopConfig.php");
 
+namespace YunYao\YopSdk\Lib;
+
+//require_once("YopConfig.php");
 class YopRequest
 {
     public $config;
@@ -58,9 +60,6 @@ class YopRequest
      */
     public $signRet = false;
     /**
-
-
-    /**
      * 可支持不同请求使用不同的appKey及secretKey、serverRoot,secretKey只用于本地签名，不会被提交
      */
     public $serverRoot;
@@ -105,7 +104,7 @@ class YopRequest
         $this->method = $method;
     }
 
-    public function __construct($appKey='', $secretKey=null,  $yopPublicKey = null, $serverRoot = null)
+    public function __construct($appKey = '', $secretKey = null, $yopPublicKey = null, $serverRoot = null)
     { //定义构造函数
         $this->config = new YopConfig();
         $this->requestId = YopRequest::uuid();

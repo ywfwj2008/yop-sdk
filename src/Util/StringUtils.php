@@ -1,4 +1,5 @@
 <?php
+namespace YunYao\YopSdk\Util;
 
 /**
  * Created by PhpStorm.
@@ -8,8 +9,6 @@
  */
 abstract class StringUtils
 {
-
-
     static function isBlank($field)
     {
 

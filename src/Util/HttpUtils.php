@@ -6,8 +6,8 @@
  * Time: 20:28
  */
 
-require_once("StringBuilder.php");
-
+namespace YunYao\YopSdk\Util;
+//require_once("StringBuilder.php");
 
 abstract class HttpUtils
 {

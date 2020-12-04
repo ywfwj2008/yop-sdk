@@ -1,6 +1,6 @@
 <?php
 
-namespace DishCheng\YopPay\Util;
+namespace YunYao\YopSdk\Util;
 
 class UriUtils
 {

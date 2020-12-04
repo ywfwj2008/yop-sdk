@@ -1,6 +1,12 @@
 <?php
 
 namespace YunYao\YopSdk\Lib;
+
+use YunYao\YopSdk\Util\Base64Url;
+use YunYao\YopSdk\Util\HttpRequest;
+use YunYao\YopSdk\Util\HttpUtils;
+use YunYao\YopSdk\Util\StringUtils;
+
 //require_once("YopRequest.php");
 //require_once("YopResponse.php");
 //require_once("YopError.php");
@@ -8,7 +14,6 @@ namespace YunYao\YopSdk\Lib;
 //require_once("Util/StringUtils.php");
 //require_once("Util/HttpUtils.php");
 //require_once("Util/Base64Url.php");
-
 
 class YopRsaClient
 {
@@ -36,8 +41,8 @@ class YopRsaClient
         }
 
         date_default_timezone_set('PRC');
-        $dataTime = new DateTime();
-        $timestamp = $dataTime->format(DateTime::ISO8601); // Works the same since const ISO8601 = "Y-m-d\TH:i:sO"
+        $dataTime = new \DateTime();
+        $timestamp = $dataTime->format(\DateTime::ISO8601); // Works the same since const ISO8601 = "Y-m-d\TH:i:sO"
 
         $headers = array();
 
@@ -158,7 +163,7 @@ class YopRsaClient
     /**
      * @param $methodOrUri
      * @param $YopRequest
-     * @return type
+     * @return type|\YunYao\YopSdk\Util\type
      */
     public static function postString($methodOrUri, $YopRequest)
     {
@@ -166,8 +171,7 @@ class YopRsaClient
         $serverUrl = YopRsaClient::richRequest($methodOrUri, $YopRequest);
 
         self::SignRsaParameter($methodOrUri, $YopRequest);
-        $response = HttpRequest::curl_request($serverUrl, $YopRequest);
-        return $response;
+        return HttpRequest::curl_request($serverUrl, $YopRequest);
     }
 
     /**
@@ -202,7 +206,7 @@ class YopRsaClient
     /**
      * @param $headers
      * @param $headersToSign
-     * @return arry
+     * @return array
      */
     public static function getHeadersToSign($headers, $headersToSign)
     {
@@ -285,8 +289,7 @@ class YopRsaClient
     public static function upload($methodOrUri, $YopRequest)
     {
         $content = self::uploadForString($methodOrUri, $YopRequest);
-        $response = self::handleRsaResult($YopRequest, $content);
-        return $response;
+        return self::handleRsaResult($YopRequest, $content);
     }
 
     public static function uploadForString($methodOrUri, $YopRequest)
@@ -294,8 +297,7 @@ class YopRsaClient
         $YopRequest->httpMethod = "POST";
         $serverUrl = self::richRequest($methodOrUri, $YopRequest);
         self::SignRsaParameter($methodOrUri, $YopRequest);
-        $response = HttpRequest::curl_request($serverUrl, $YopRequest);
-        return $response;
+        return HttpRequest::curl_request($serverUrl, $YopRequest);
     }
 
     static public function richRequest($methodOrUri, $YopRequest)
@@ -326,7 +328,7 @@ class YopRsaClient
         $response = new YopResponse();
         $jsoncontent = json_decode($content['content']);
 
-        if(empty($sign)){
+        if (empty($sign)) {
             return $content;
         }
 
@@ -347,9 +349,11 @@ class YopRsaClient
         $response->validSign = YopRsaClient::isValidRsaResult($signStr, $sign, $YopRequest->yopPublicKey);
         return $response;
     }
+
     //去空格换行符
-    static public function trimall($str){
-        $qian=array(" ","　","\t","\n","\r");
+    static public function trimall($str)
+    {
+        $qian = array(" ", "　", "\t", "\n", "\r");
         return str_replace($qian, '', $str);
     }
 
@@ -362,23 +366,22 @@ class YopRsaClient
             $str = "";
         } else {
             $str .= trim($result);
-        }
-        ;
+        };
 
         $public_key = "-----BEGIN PUBLIC KEY-----\n" .
             wordwrap($public_key, 64, "\n", true) .
             "\n-----END PUBLIC KEY-----";
         $pu_key = openssl_pkey_get_public($public_key);
 
-      //  $str=str_replace("\\","",str_replace("\\n","",$str));
+        //  $str=str_replace("\\","",str_replace("\\n","",$str));
 
-        $str= self::trimall($str);
-        $str= trim($str, '"');
+        $str = self::trimall($str);
+        $str = trim($str, '"');
 
-        $res = openssl_verify($str,Base64Url::decode($sign), $pu_key,"SHA256"); //验证
+        $res = openssl_verify($str, Base64Url::decode($sign), $pu_key, "SHA256"); //验证
         openssl_free_key($pu_key);
         if ($res == 1) {
-            echo  "验签成功";
+            echo "验签成功";
             return true;
         } else {
             echo "验签失败";

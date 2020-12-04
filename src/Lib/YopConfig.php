@@ -1,4 +1,5 @@
 <?php
+namespace YunYao\YopSdk\Lib;
 
 class YopConfig
 {
@@ -55,11 +56,18 @@ class YopConfig
     // 时间戳
     public $TIMESTAMP = "ts";
     public $publicED_KEY = array();
-    public  $publickey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6p0XWjscY+gsyqKRhw9MeLsEmhFdBRhT2emOck/F1Omw38ZWhJxh9kDfs5HzFJMrVozgU+SJFDONxs8UB0wMILKRmqfLcfClG9MyCNuJkkfm0HFQv1hRGdOvZPXj3Bckuwa7FrEXBRYUhK7vJ40afumspthmse6bs6mZxNn/mALZ2X07uznOrrc2rk41Y2HftduxZw6T4EmtWuN2x4CZ8gwSyPAW5ZzZJLQ6tZDojBK4GZTAGhnn3bg5bBsBlw2+FLkCQBuDsJVsFPiGh/b6K/+zGTvWyUcu+LUj2MejYQELDO3i2vQXVDk7lVi2/TcUYefvIcssnzsfCfjaorxsuwIDAQAB";
+    public $publickey = '';
+    public $parentMerchantNo;
 
 
     public function __construct()
     {
+        $this->appKey = config('yop_pay.appKey');
+        $this->publickey = config('yop_pay.yop_public_key');
+        $this->parentMerchantNo = config('yop_pay.parentMerchantNo');
+        $this->appKey = config('yop_pay.appKey');
+        $this->aesSecretKey = config('yop_pay.private_key');
+//        $this->serverRoot = config('yop_pay.serverRoot');
         array_push($this->publicED_KEY, $this->APP_KEY, $this->VERSION, $this->SIGN, $this->METHOD, $this->SESSION_ID, $this->CUSTOMER_NO, $this->ENCRYPT, "", false);
     }
 

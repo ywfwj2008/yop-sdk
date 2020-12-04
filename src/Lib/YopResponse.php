@@ -1,17 +1,16 @@
 <?php
-namespace YunYao\YopSDK\Lib;
+namespace YunYao\YopSdk\Lib;
 
-class YopResponse{
+class YopResponse
+{
     /**
      * 状态(SUCCESS/FAILURE)
      */
-
     public $state;
 
     /**
      * 业务结果，非简单类型解析后为LinkedHashMap
      */
-
     public $result;
 
     /**
@@ -26,11 +25,13 @@ class YopResponse{
 
     public $requestId;
 
-    public function __set($name, $value){
+    public function __set($name, $value)
+    {
         $this->$name = $value;
     }
 
-    public function __get($name){
+    public function __get($name)
+    {
         return $this->$name;
     }
 

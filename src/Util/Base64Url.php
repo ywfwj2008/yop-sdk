@@ -1,5 +1,5 @@
 <?php
-namespace DishCheng\YopPay\Util;
+namespace YunYao\YopSdk\Util;
 
 /*
  * The MIT License (MIT)

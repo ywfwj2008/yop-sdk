@@ -1,17 +1,16 @@
 <?php
 
-namespace YopPay;
+namespace YunYao\YopSdk;
 
-use DishCheng\YopPay\Lib\YopClient3;
-use DishCheng\YopPay\Lib\YopRequest;
-use DishCheng\YopPay\Lib\YopResponse;
-use DishCheng\YopPay\Lib\YopRsaClient;
-use DishCheng\YopPay\Util\UriUtils;
-use DishCheng\YopPay\Util\YopSignUtils;
+use YunYao\YopSdk\Lib\YopClient3;
+use YunYao\YopSdk\Lib\YopRequest;
+use YunYao\YopSdk\Lib\YopResponse;
+use YunYao\YopSdk\Lib\YopRsaClient;
+use YunYao\YopSdk\Util\UriUtils;
+use YunYao\YopSdk\Util\YopSignUtils;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 
-class YopPay extends YopRsaClient
+class YopSdk extends YopRsaClient
 {
     #将参数转换成k=v拼接的形式
     public static function arrayToString($arraydata)

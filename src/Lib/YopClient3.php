@@ -1,7 +1,7 @@
 <?php
+namespace YunYao\YopSdk\Lib;
 
-require_once("YopRsaClient.php");
-
+//require_once("YopRsaClient.php");
 class YopClient3 extends YopRsaClient
 {
 
