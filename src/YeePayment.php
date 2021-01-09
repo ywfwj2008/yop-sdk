@@ -1,24 +1,24 @@
 <?php
 
-namespace YunYao\YopSdk;
+namespace YeePay;
 
-use YunYao\YopSdk\Lib\YopClient3;
-use YunYao\YopSdk\Lib\YopRequest;
-use YunYao\YopSdk\Lib\YopResponse;
-use YunYao\YopSdk\Lib\YopRsaClient;
-use YunYao\YopSdk\Util\UriUtils;
-use YunYao\YopSdk\Util\YopSignUtils;
+use YeePay\Lib\YopClient3;
+use YeePay\Lib\YopRequest;
+use YeePay\Lib\YopResponse;
+use YeePay\Lib\YopRsaClient;
+use YeePay\Util\UriUtils;
+use YeePay\Util\YopSignUtils;
 use Illuminate\Support\Arr;
 
-class YopSdk extends YopRsaClient
+class YeePayment extends YopRsaClient
 {
     #将参数转换成k=v拼接的形式
     public static function arrayToString($arraydata)
     {
-        $Str="";
-        foreach ($arraydata as $k=>$v) {
-            $Str.=strlen($Str)==0 ? "" : "&";
-            $Str.=$k."=".$v;
+        $Str = "";
+        foreach ($arraydata as $k => $v) {
+            $Str .= strlen($Str) == 0 ? "" : "&";
+            $Str .= $k . "=" . $v;
         }
         return $Str;
     }
@@ -64,25 +64,25 @@ class YopSdk extends YopRsaClient
      */
     public static function createOrder(array $params)
     {
-        $request=new YopRequest();
-        $parentMerchantNo=config('yop_pay.parentMerchantNo');
+        $request = new YopRequest();
+        $parentMerchantNo = config('yop_pay.parentMerchantNo');
         $request->addParam("parentMerchantNo", $parentMerchantNo);
 
-        $data['parentMerchantNo']=$parentMerchantNo;
-        $data['merchantNo']=$params['merchantNo'];
-        $data['orderId']=$params['orderId'];
-        $data['orderAmount']=$params['orderAmount'];
-        $data['notifyUrl']=$params['notifyUrl'];
+        $data['parentMerchantNo'] = $parentMerchantNo;
+        $data['merchantNo'] = $params['merchantNo'];
+        $data['orderId'] = $params['orderId'];
+        $data['orderAmount'] = $params['orderAmount'];
+        $data['notifyUrl'] = $params['notifyUrl'];
 
         //这个hmackey与merchantNo对应
-        $hmacKey=$params['hmacKey'];
-        $hmacstr=hash_hmac('sha256', self::arrayToString($data), $hmacKey, true);
-        $hmac=bin2hex($hmacstr);
-        foreach ($params as $key=>$value) {
+        $hmacKey = $params['hmacKey'];
+        $hmacstr = hash_hmac('sha256', self::arrayToString($data), $hmacKey, true);
+        $hmac = bin2hex($hmacstr);
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
         $request->addParam('hmac', $hmac);
-        $response=YopClient3::post(UriUtils::CreateOrder, $request);
+        $response = YopClient3::post(UriUtils::CreateOrder, $request);
         return $response;
     }
 
@@ -122,7 +122,7 @@ class YopSdk extends YopRsaClient
      */
     public static function getPayApiInfo($token, $params)
     {
-        $request=new YopRequest();
+        $request = new YopRequest();
         $request->addParam("token", $token);
 
         //设置默认支付工具为，WECHAT_OPENID（公众号支付）
@@ -142,12 +142,12 @@ class YopSdk extends YopRsaClient
 
         //默认为线上场景
         if (!Arr::has($params, 'extParamMap')) {
-            $request->addParam('extParamMap', json_encode(['reportFee'=>'XIANXIA']));
+            $request->addParam('extParamMap', json_encode(['reportFee' => 'XIANXIA']));
         }
-        foreach ($params as $key=>$paramValue) {
+        foreach ($params as $key => $paramValue) {
             $request->addParam($key, $paramValue);
         }
-        $response=YopClient3::post(UriUtils::NcCashierApiPay, $request);
+        $response = YopClient3::post(UriUtils::NcCashierApiPay, $request);
         return $response;
     }
 
@@ -186,21 +186,21 @@ class YopSdk extends YopRsaClient
      */
     public static function orderClose($params)
     {
-        $request=new YopRequest();
-        $parentMerchantNo=config('yop_pay.parentMerchantNo');
+        $request = new YopRequest();
+        $parentMerchantNo = config('yop_pay.parentMerchantNo');
         $request->addParam("parentMerchantNo", $parentMerchantNo);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $data=[];
-        $data['parentMerchantNo']=$parentMerchantNo;
-        $data['merchantNo']=$params['merchantNo'];
-        $data['orderId']=$params['orderId'];
-        $data['uniqueOrderNo']=$params['uniqueOrderNo'];
-        $hmacstr=hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true);
-        $hmac=bin2hex($hmacstr);
+        $data = [];
+        $data['parentMerchantNo'] = $parentMerchantNo;
+        $data['merchantNo'] = $params['merchantNo'];
+        $data['orderId'] = $params['orderId'];
+        $data['uniqueOrderNo'] = $params['uniqueOrderNo'];
+        $hmacstr = hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true);
+        $hmac = bin2hex($hmacstr);
         $request->addParam('hmac', $hmac);
-        $response=YopClient3::post(UriUtils::TradeOrderClose, $request);
+        $response = YopClient3::post(UriUtils::TradeOrderClose, $request);
         return $response;
     }
 
@@ -248,24 +248,24 @@ class YopSdk extends YopRsaClient
      */
     public static function queryOrder($params)
     {
-        $request=new YopRequest();
-        $parentMerchantNo=config('yop_pay.parentMerchantNo');
+        $request = new YopRequest();
+        $parentMerchantNo = config('yop_pay.parentMerchantNo');
 
         $request->addParam("parentMerchantNo", $parentMerchantNo);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $data=[];
-        $data['parentMerchantNo']=$parentMerchantNo;
-        $data['merchantNo']=$params['merchantNo'];
-        $data['orderId']=$params['orderId'];
+        $data = [];
+        $data['parentMerchantNo'] = $parentMerchantNo;
+        $data['merchantNo'] = $params['merchantNo'];
+        $data['orderId'] = $params['orderId'];
         if (isset($params['uniqueOrderNo'])) {
-            $data['uniqueOrderNo']=$params['uniqueOrderNo'];
+            $data['uniqueOrderNo'] = $params['uniqueOrderNo'];
         }
-        $hmacstr=hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true);
-        $hmac=bin2hex($hmacstr);
+        $hmacstr = hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true);
+        $hmac = bin2hex($hmacstr);
         $request->addParam('hmac', $hmac);
-        $response=YopClient3::post(UriUtils::QueryOrder, $request);
+        $response = YopClient3::post(UriUtils::QueryOrder, $request);
         return $response;
     }
 
@@ -291,20 +291,20 @@ class YopSdk extends YopRsaClient
      */
     public static function tradeDivide($params)
     {
-        $request=new YopRequest();
-        $parentMerchantNo=config('yop_pay.parentMerchantNo');
+        $request = new YopRequest();
+        $parentMerchantNo = config('yop_pay.parentMerchantNo');
         $request->addParam("parentMerchantNo", $parentMerchantNo);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $data=[
-            'parentMerchantNo'=>$parentMerchantNo,
-            'merchantNo'=>$params['merchantNo'],
-            'orderId'=>$params['orderId'],
-            'uniqueOrderNo'=>$params['uniqueOrderNo'],
-            'divideRequestId'=>$params['divideRequestId'],
+        $data = [
+            'parentMerchantNo' => $parentMerchantNo,
+            'merchantNo' => $params['merchantNo'],
+            'orderId' => $params['orderId'],
+            'uniqueOrderNo' => $params['uniqueOrderNo'],
+            'divideRequestId' => $params['divideRequestId'],
         ];
-        $hmac=bin2hex(hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true));
+        $hmac = bin2hex(hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true));
         $request->addParam('hmac', $hmac);
         return YopClient3::post(UriUtils::TradeDivide, $request);
     }
@@ -326,20 +326,20 @@ class YopSdk extends YopRsaClient
      */
     public static function divideQuery($params)
     {
-        $request=new YopRequest();
-        $parentMerchantNo=config('yop_pay.parentMerchantNo');
+        $request = new YopRequest();
+        $parentMerchantNo = config('yop_pay.parentMerchantNo');
         $request->addParam("parentMerchantNo", $parentMerchantNo);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $data=[
-            'parentMerchantNo'=>$parentMerchantNo,
-            'merchantNo'=>$params['merchantNo'],
-            'orderId'=>$params['orderId'],
-            'uniqueOrderNo'=>$params['uniqueOrderNo'],
-            'divideRequestId'=>$params['divideRequestId'],
+        $data = [
+            'parentMerchantNo' => $parentMerchantNo,
+            'merchantNo' => $params['merchantNo'],
+            'orderId' => $params['orderId'],
+            'uniqueOrderNo' => $params['uniqueOrderNo'],
+            'divideRequestId' => $params['divideRequestId'],
         ];
-        $hmac=bin2hex(hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true));
+        $hmac = bin2hex(hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true));
         $request->addParam('hmac', $hmac);
         return YopClient3::post(UriUtils::TradeDivideQuery, $request);
     }
@@ -364,20 +364,20 @@ class YopSdk extends YopRsaClient
      */
     public static function endDivide($params)
     {
-        $request=new YopRequest();
-        $parentMerchantNo=config('yop_pay.parentMerchantNo');
+        $request = new YopRequest();
+        $parentMerchantNo = config('yop_pay.parentMerchantNo');
         $request->addParam("parentMerchantNo", $parentMerchantNo);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $data=[
-            'parentMerchantNo'=>$parentMerchantNo,
-            'merchantNo'=>$params['merchantNo'],
-            'orderId'=>$params['orderId'],
-            'uniqueOrderNo'=>$params['uniqueOrderNo'],
-            'endDivideRequestId'=>$params['endDivideRequestId'],
+        $data = [
+            'parentMerchantNo' => $parentMerchantNo,
+            'merchantNo' => $params['merchantNo'],
+            'orderId' => $params['orderId'],
+            'uniqueOrderNo' => $params['uniqueOrderNo'],
+            'endDivideRequestId' => $params['endDivideRequestId'],
         ];
-        $hmac=bin2hex(hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true));
+        $hmac = bin2hex(hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true));
         $request->addParam('hmac', $hmac);
         return YopClient3::post(UriUtils::TradeEndDivide, $request);
     }
@@ -400,19 +400,19 @@ class YopSdk extends YopRsaClient
      */
     public static function fullSettle($params)
     {
-        $request=new YopRequest();
-        $parentMerchantNo=config('yop_pay.parentMerchantNo');
+        $request = new YopRequest();
+        $parentMerchantNo = config('yop_pay.parentMerchantNo');
         $request->addParam("parentMerchantNo", $parentMerchantNo);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $data=[
-            'parentMerchantNo'=>$parentMerchantNo,
-            'merchantNo'=>$params['merchantNo'],
-            'orderId'=>$params['orderId'],
-            'uniqueOrderNo'=>$params['uniqueOrderNo'],
+        $data = [
+            'parentMerchantNo' => $parentMerchantNo,
+            'merchantNo' => $params['merchantNo'],
+            'orderId' => $params['orderId'],
+            'uniqueOrderNo' => $params['uniqueOrderNo'],
         ];
-        $hmac=bin2hex(hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true));
+        $hmac = bin2hex(hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true));
         $request->addParam('hmac', $hmac);
         return YopClient3::post(UriUtils::TradeFullSettle, $request);
     }
@@ -456,26 +456,26 @@ class YopSdk extends YopRsaClient
      */
     public static function refundOrder($params)
     {
-        $request=new YopRequest();
-        $parentMerchantNo=config('yop_pay.parentMerchantNo');
+        $request = new YopRequest();
+        $parentMerchantNo = config('yop_pay.parentMerchantNo');
 
         $request->addParam("parentMerchantNo", $parentMerchantNo);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $data=[];
-        $data['parentMerchantNo']=$parentMerchantNo;
-        $data['merchantNo']=$params['merchantNo'];
-        $data['orderId']=$params['orderId'];
-        $data['uniqueOrderNo']=$params['uniqueOrderNo'];
-        $data['refundRequestId']=$params['refundRequestId'];
-        $data['refundAmount']=$params['refundAmount'];
+        $data = [];
+        $data['parentMerchantNo'] = $parentMerchantNo;
+        $data['merchantNo'] = $params['merchantNo'];
+        $data['orderId'] = $params['orderId'];
+        $data['uniqueOrderNo'] = $params['uniqueOrderNo'];
+        $data['refundRequestId'] = $params['refundRequestId'];
+        $data['refundAmount'] = $params['refundAmount'];
 
-        $hmacstr=hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true);
-        $hmac=bin2hex($hmacstr);
+        $hmacstr = hash_hmac('sha256', self::arrayToString($data), $params['hmacKey'], true);
+        $hmac = bin2hex($hmacstr);
         $request->addParam('hmac', $hmac);
 
-        $response=YopClient3::post(UriUtils::TradeRefund, $request);
+        $response = YopClient3::post(UriUtils::TradeRefund, $request);
         return $response;
     }
 
@@ -495,11 +495,11 @@ class YopSdk extends YopRsaClient
      */
     public static function upLoadpayJsapiConfig($params)
     {
-        $request=new YopRequest();
-        foreach ($params as $key=>$value) {
+        $request = new YopRequest();
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $response=YopClient3::post(UriUtils::OpenPayAsyncReportConfig, $request);
+        $response = YopClient3::post(UriUtils::OpenPayAsyncReportConfig, $request);
         return $response;
     }
 
@@ -517,11 +517,11 @@ class YopSdk extends YopRsaClient
      */
     public static function payJsapiConfigQuery($params)
     {
-        $request=new YopRequest();
-        foreach ($params as $key=>$value) {
+        $request = new YopRequest();
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $response=YopClient3::post(UriUtils::OpenPayJsApiConfigQuery, $request);
+        $response = YopClient3::post(UriUtils::OpenPayJsApiConfigQuery, $request);
         return $response;
     }
 
@@ -540,11 +540,11 @@ class YopSdk extends YopRsaClient
      */
     public static function openPayAsyncReport($params)
     {
-        $request=new YopRequest();
-        foreach ($params as $key=>$value) {
+        $request = new YopRequest();
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $response=YopClient3::post(UriUtils::OpenPayAsyncReport, $request);
+        $response = YopClient3::post(UriUtils::OpenPayAsyncReport, $request);
         return $response;
     }
 
@@ -579,16 +579,16 @@ class YopSdk extends YopRsaClient
      */
     public static function dfTransferToSingle($customer_number, $customer_private_key, $customer_yop_public_key, $params)
     {
-        $request=new YopRequest("OPR:".$customer_number, $customer_private_key, null, $customer_yop_public_key);
+        $request = new YopRequest("OPR:" . $customer_number, $customer_private_key, null, $customer_yop_public_key);
         /**
          * customerNumber和groupNumber都是易宝子商户的账号，每笔转账一元手续费
          */
         $request->addParam("customerNumber", $customer_number);
         $request->addParam("groupNumber", $customer_number);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $response=YopClient3::post(UriUtils::DFTransferToSingle, $request);
+        $response = YopClient3::post(UriUtils::DFTransferToSingle, $request);
         return $response;
     }
 
@@ -611,13 +611,13 @@ class YopSdk extends YopRsaClient
      */
     public static function dfTransferQuery($customer_number, $customer_private_key, $customer_yop_public_key, $params)
     {
-        $request=new YopRequest("OPR:".$customer_number, $customer_private_key, null, $customer_yop_public_key);
+        $request = new YopRequest("OPR:" . $customer_number, $customer_private_key, null, $customer_yop_public_key);
         $request->addParam("customerNumber", $customer_number);
         $request->addParam("groupNumber", $customer_number);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $response=YopClient3::post(UriUtils::DFTransferQuery, $request);
+        $response = YopClient3::post(UriUtils::DFTransferQuery, $request);
         return $response;
     }
 
@@ -633,12 +633,12 @@ class YopSdk extends YopRsaClient
      */
     public static function merchantBalanceQuery($params)
     {
-        $request=new YopRequest();
+        $request = new YopRequest();
         $request->addParam("parentMerchantNo", config('yop_pay.parentMerchantNo'));
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $response=YopClient3::post(UriUtils::MerchantBalanceQuery, $request);
+        $response = YopClient3::post(UriUtils::MerchantBalanceQuery, $request);
         return $response;
     }
 
@@ -653,12 +653,12 @@ class YopSdk extends YopRsaClient
      */
     public static function merchantHmacKeyQuery($params)
     {
-        $request=new YopRequest();
+        $request = new YopRequest();
         $request->addParam("parentMerchantNo", config('yop_pay.parentMerchantNo'));
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $response=YopClient3::post(UriUtils::QueryHmacKey, $request);
+        $response = YopClient3::post(UriUtils::QueryHmacKey, $request);
         return $response;
     }
 
@@ -675,13 +675,13 @@ class YopSdk extends YopRsaClient
      */
     public static function QueryBankInfo($params)
     {
-        $request=new YopRequest();
+        $request = new YopRequest();
         $request->addParam("parentMerchantNo", config('yop_pay.parentMerchantNo'));
         $request->addParam("merchantNo", $params['merchantNo']);
-        foreach ($params as $key=>$value) {
+        foreach ($params as $key => $value) {
             $request->addParam($key, $value);
         }
-        $response=YopClient3::post(UriUtils::QueryQueryBanCardBinInfo, $request);
+        $response = YopClient3::post(UriUtils::QueryQueryBanCardBinInfo, $request);
         return $response;
     }
 

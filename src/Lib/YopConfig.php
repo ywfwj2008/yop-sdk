@@ -1,5 +1,6 @@
 <?php
-namespace YunYao\YopSdk\Lib;
+
+namespace YeePay\Lib;
 
 class YopConfig
 {
@@ -56,7 +57,7 @@ class YopConfig
     // 时间戳
     public $TIMESTAMP = "ts";
     public $publicED_KEY = array();
-    public $publickey = '';
+    public $publickey = "";
     public $parentMerchantNo;
 
 
@@ -76,6 +77,7 @@ class YopConfig
         $this->$name = $value;
 
     }
+
     public function __get($name)
     {
         return $this->$name;

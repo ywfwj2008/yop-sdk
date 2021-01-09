@@ -1,5 +1,6 @@
 <?php
-namespace YunYao\YopSdk\Util;
+
+namespace YeePay\Util;
 
 /**
  * Created by PhpStorm.
@@ -9,6 +10,8 @@ namespace YunYao\YopSdk\Util;
  */
 abstract class StringUtils
 {
+
+
     static function isBlank($field)
     {
 

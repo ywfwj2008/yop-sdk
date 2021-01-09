@@ -1,11 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: wilson
- * Date: 16/7/7
- * Time: 16:21
- */
 
+namespace YeePay\Util;
 
 abstract class BlowfishEncrypter
 {

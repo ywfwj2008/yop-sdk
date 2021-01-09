@@ -1,5 +1,6 @@
 <?php
-namespace YunYao\YopSdk\Lib;
+
+namespace YeePay\Lib;
 
 class YopError
 {

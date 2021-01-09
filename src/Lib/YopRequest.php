@@ -1,8 +1,10 @@
 <?php
 
-namespace YunYao\YopSdk\Lib;
+namespace YeePay\Lib;
+
 
 //require_once("YopConfig.php");
+
 class YopRequest
 {
     public $config;
@@ -81,7 +83,6 @@ class YopRequest
         $signRetStr = $signRet ? 'true' : 'false';
         $this->signRet = $signRet;
         $this->addParam($this->Config->SIGN_RETURN, $signRetStr);
-
     }
 
     public function setSignAlg($signAlg)

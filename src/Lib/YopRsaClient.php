@@ -1,11 +1,11 @@
 <?php
 
-namespace YunYao\YopSdk\Lib;
+namespace YeePay\Lib;
 
-use YunYao\YopSdk\Util\Base64Url;
-use YunYao\YopSdk\Util\HttpRequest;
-use YunYao\YopSdk\Util\HttpUtils;
-use YunYao\YopSdk\Util\StringUtils;
+use YeePay\Util\Base64Url;
+use YeePay\Util\HttpRequest;
+use YeePay\Util\HttpUtils;
+use YeePay\Util\StringUtils;
 
 //require_once("YopRequest.php");
 //require_once("YopResponse.php");
@@ -14,6 +14,7 @@ use YunYao\YopSdk\Util\StringUtils;
 //require_once("Util/StringUtils.php");
 //require_once("Util/HttpUtils.php");
 //require_once("Util/Base64Url.php");
+
 
 class YopRsaClient
 {
@@ -149,29 +150,26 @@ class YopRsaClient
         $serverUrl .= (strpos($serverUrl, '?') === false ? '?' : '&') . $YopRequest->toQueryString();
 
         self::SignRsaParameter($methodOrUri, $YopRequest);
-        $response = HttpRequest::curl_request($serverUrl, $YopRequest);
-        return $response;
+        return HttpRequest::curl_request($serverUrl, $YopRequest);
     }
 
     public static function post($methodOrUri, $YopRequest)
     {
         $content = YopRsaClient::postString($methodOrUri, $YopRequest);
-        $response = YopRsaClient::handleRsaResult($YopRequest, $content);
-        return $response;
+        return YopRsaClient::handleRsaResult($YopRequest, $content);
     }
 
     /**
      * @param $methodOrUri
      * @param $YopRequest
-     * @return type|\YunYao\YopSdk\Util\type
+     * @return \DishCheng\YopPay\Util\type
      */
     public static function postString($methodOrUri, $YopRequest)
     {
         $YopRequest->httpMethod = "POST";
         $serverUrl = YopRsaClient::richRequest($methodOrUri, $YopRequest);
-
         self::SignRsaParameter($methodOrUri, $YopRequest);
-        return HttpRequest::curl_request($serverUrl, $YopRequest);
+        return HTTPRequest::curl_request($serverUrl, $YopRequest);
     }
 
     /**
@@ -289,7 +287,8 @@ class YopRsaClient
     public static function upload($methodOrUri, $YopRequest)
     {
         $content = self::uploadForString($methodOrUri, $YopRequest);
-        return self::handleRsaResult($YopRequest, $content);
+        $response = self::handleRsaResult($YopRequest, $content);
+        return $response;
     }
 
     public static function uploadForString($methodOrUri, $YopRequest)
@@ -297,7 +296,8 @@ class YopRsaClient
         $YopRequest->httpMethod = "POST";
         $serverUrl = self::richRequest($methodOrUri, $YopRequest);
         self::SignRsaParameter($methodOrUri, $YopRequest);
-        return HttpRequest::curl_request($serverUrl, $YopRequest);
+        $response = HttpRequest::curl_request($serverUrl, $YopRequest);
+        return $response;
     }
 
     static public function richRequest($methodOrUri, $YopRequest)
@@ -357,7 +357,7 @@ class YopRsaClient
         return str_replace($qian, '', $str);
     }
 
-#header sign 验签
+    #header sign 验签
     public static function isValidRsaResult($result, $sign, $public_key)
     {
         // $result=json_encode($result,320);

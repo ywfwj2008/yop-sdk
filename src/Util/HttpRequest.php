@@ -1,6 +1,6 @@
 <?php
-namespace YunYao\YopSdk\Util;
 
+namespace YeePay\Util;
 //require_once("HttpUtils.php");
 error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 define("LANGS", "php");
@@ -51,11 +51,7 @@ abstract class HttpRequest
             array_push($headerArray, 'Content-Type: application/json; charset=utf-8',
                 'Content-Length: ' . strlen($request->jsonParam));
         }
-        //var_dump($headerArray);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headerArray);
-        //curl_setopt($curl, CURLINFO_HEADER_OUT, );
-        //var_dump($request);
-        //var_dump($request->httpMethod);
         if ("POST" == $request->httpMethod) {
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_POST, 1);
@@ -92,7 +88,6 @@ abstract class HttpRequest
             curl_setopt($curl, CURLOPT_URL, $url);
         }
         $data = curl_exec($curl);
-        //print_r($data);
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         if (curl_errno($curl)) {
             return curl_error($curl);
@@ -114,8 +109,8 @@ abstract class HttpRequest
             }
 
             $info['header'] = $headList;
-            //print_r($headList);
-            //echo '----------<br>';
+//            print_r($headList);
+//            echo '----------<br>';
             $info['content'] = $body;
             $info['filecontent'] = $bodys;
             //print_r($bodys);

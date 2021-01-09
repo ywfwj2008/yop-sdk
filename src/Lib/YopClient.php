@@ -1,10 +1,10 @@
 <?php
 
-namespace YunYao\YopSdk\Lib;
+namespace YeePay\Lib;
 
-use YunYao\YopSdk\Util\AESEncrypter;
-use YunYao\YopSdk\Util\YopSignUtils;
-use YunYao\YopSdk\Util\HttpRequest;
+use YeePay\Util\AESEncrypter;
+use YeePay\Util\YopSignUtils;
+use YeePay\Util\HttpRequest;
 
 //require_once("YopRequest.php");
 //require_once("YopResponse.php");

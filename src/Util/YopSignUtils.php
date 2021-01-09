@@ -1,6 +1,6 @@
 <?php
-namespace YunYao\YopSdk\Util;
 
+namespace YeePay\Util;
 //require_once("Base64Url.php");
 //require_once("AESEncrypter.php");
 
@@ -56,7 +56,7 @@ abstract class YopSignUtils
         $signValue = hash($algName, $str);
 
         if ($debug) {
-            print_r($YopConfig);
+            //print_r($YopConfig);
             var_dump("algName=" . $algName);
             var_dump("str=" . $str);
             var_dump("signValue=" . $signValue);
@@ -74,6 +74,8 @@ abstract class YopSignUtils
      * @param String $sign 签名值
      * @return string 返回签名是否正确 0 - 如果两个字符串相等
      */
+
+
     static function isValidResult($result, $secret, $algName, $sign)
     {
 //       var_dump($result);
@@ -96,7 +98,6 @@ abstract class YopSignUtils
 
     static function decrypt($source, $private_Key, $public_Key)
     {
-
         $private_key = "-----BEGIN RSA PRIVATE KEY-----\n" .
             wordwrap($private_Key, 64, "\n", true) .
             "\n-----END RSA PRIVATE KEY-----";
@@ -130,7 +131,6 @@ abstract class YopSignUtils
         //分解参数
         $signToBase64 = substr(strrchr($encryptedData, '$'), 1);
         $sourceData = substr($encryptedData, 0, strlen($encryptedData) - strlen($signToBase64) - 1);
-
         $public_key = "-----BEGIN PUBLIC KEY-----\n" .
             wordwrap($public_Key, 64, "\n", true) .
             "\n-----END PUBLIC KEY-----";
@@ -184,8 +184,8 @@ abstract class YopSignUtils
         openssl_pkcs12_read($pkcs12, $certs, $password);
         $prikeyid = $certs['pkey']; //私钥
 
-        $prikeyid = str_replace('-----BEGIN PRIVATE KEY-----', '', $prikeyid);
-        $prikeyid = str_replace('----END PRIVATE KEY-----', '', $prikeyid);
+        $prikeyid = str_replace('-----BEGIN RSA PRIVATE KEY-----', '', $prikeyid);
+        $prikeyid = str_replace('-----END RSA PRIVATE KEY-----', '', $prikeyid);
 
         $prikeyid = preg_replace("/(\r\n|\n|\r|\t)/i", '', $prikeyid);
 

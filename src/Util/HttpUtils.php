@@ -1,12 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yp-tc-7176
- * Date: 17/7/16
- * Time: 20:28
- */
 
-namespace YunYao\YopSdk\Util;
+namespace YeePay\Util;
+
 //require_once("StringBuilder.php");
 
 abstract class HttpUtils

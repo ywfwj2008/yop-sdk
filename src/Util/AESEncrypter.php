@@ -1,6 +1,6 @@
 <?php
 
-namespace YunYao\YopSdk\Util;
+namespace YeePay\Util;
 
 /**
  * Created by PhpStorm.

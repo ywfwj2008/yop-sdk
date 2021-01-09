@@ -1,5 +1,6 @@
 <?php
-namespace YunYao\YopSdk\Util;
+
+namespace YeePay\Util;
 
 /**
  * Created by PhpStorm.
@@ -9,41 +10,40 @@ namespace YunYao\YopSdk\Util;
  */
 class StringBuilder
 {
-    const LINE="<br/>";
-    protected $list= array('');
+    const LINE = "<br/>";
+    protected $list = array('');
 
 
-
-    public function __construct( $str=NULL)
+    public function __construct($str = NULL)
     {
-        array_push($this->list,$str);
+        array_push($this->list, $str);
 
     }
 
     public function Append($str)
     {
-        array_push($this->list,$str);
+        array_push($this->list, $str);
         return $this;
     }
 
 
     public function AppendLine($str)
     {
-        array_push($this->list,$str.self::LINE);
+        array_push($this->list, $str . self::LINE);
         return $this;
     }
 
 
     public function AppendFormat($str, $args)
     {
-        array_push($this->list, sprintf($str,$args));
+        array_push($this->list, sprintf($str, $args));
         return $this;
     }
 
 
     public function ToString()
     {
-        return implode("",$this->list);
+        return implode("", $this->list);
     }
 
 

@@ -1,16 +1,19 @@
 <?php
-namespace YunYao\YopSdk\Lib;
+
+namespace YeePay\Lib;
 
 class YopResponse
 {
     /**
      * 状态(SUCCESS/FAILURE)
      */
+
     public $state;
 
     /**
      * 业务结果，非简单类型解析后为LinkedHashMap
      */
+
     public $result;
 
     /**
